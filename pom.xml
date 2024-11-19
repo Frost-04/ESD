@@ -8,7 +8,7 @@
 		<version>3.3.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.prashantjain</groupId>
+	<groupId>com.gv</groupId>
 	<artifactId>YummyRest</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>YummyRest</name>
