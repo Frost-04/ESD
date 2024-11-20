@@ -5,6 +5,7 @@ import com.gv.yummyrest.entity.Customer;
 import com.gv.yummyrest.mapper.CustomerMapper;
 import com.gv.yummyrest.repo.CustomerRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,10 +13,32 @@ import org.springframework.stereotype.Service;
 public class CustomerService {
 
     private final CustomerRepo repo;
+    private final PasswordEncoder passwordEncoder;
     private final CustomerMapper mapper;
+
     public String createCustomer(CustomerRequest request) {
         Customer customer = mapper.toEntity(request);
         repo.save(customer);
         return "Created";
+    }
+
+    public boolean login(String email, String rawPassword) {
+        Customer customer = repo.findByEmail(email);
+        if (customer != null) {
+            return passwordEncoder.matches(rawPassword, customer.getPassword());
+        }
+        return false;
+    }
+
+    public void deleteCustomer(Long id) {
+        repo.deleteById(id);
+    }
+
+    public Customer updateCustomer(Long id, CustomerRequest request) {
+        Customer customer = repo.findById(id).orElseThrow(() -> new RuntimeException("Customer not found"));
+        customer.setFirstName(request.firstName());
+        customer.setLastName(request.lastName());
+        // Do not update email and password
+        return repo.save(customer);
     }
 }
