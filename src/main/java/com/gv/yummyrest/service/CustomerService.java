@@ -4,6 +4,7 @@ import com.gv.yummyrest.dto.CustomerRequest;
 import com.gv.yummyrest.entity.Customer;
 import com.gv.yummyrest.mapper.CustomerMapper;
 import com.gv.yummyrest.repo.CustomerRepo;
+import com.gv.yummyrest.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ public class CustomerService {
     private final CustomerRepo repo;
     private final PasswordEncoder passwordEncoder;
     private final CustomerMapper mapper;
+    private final JwtUtil jwtUtil;
 
     public String createCustomer(CustomerRequest request) {
         Customer customer = mapper.toEntity(request);
@@ -22,12 +24,12 @@ public class CustomerService {
         return "Created";
     }
 
-    public boolean login(String email, String rawPassword) {
+    public String login(String email, String rawPassword) {
         Customer customer = repo.findByEmail(email);
-        if (customer != null) {
-            return passwordEncoder.matches(rawPassword, customer.getPassword());
+        if (customer != null && passwordEncoder.matches(rawPassword, customer.getPassword())) {
+            return jwtUtil.generateToken(email);
         }
-        return false;
+        throw new RuntimeException("Invalid email or password");
     }
 
     public void deleteCustomer(Long id) {

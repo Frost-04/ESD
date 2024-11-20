@@ -1,6 +1,7 @@
 package com.gv.yummyrest.controller;
 
 import com.gv.yummyrest.dto.CustomerRequest;
+import com.gv.yummyrest.dto.LoginRequest;
 import com.gv.yummyrest.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.gv.yummyrest.entity.Customer;
 import org.springframework.web.bind.annotation.*;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/customer")
@@ -21,6 +23,12 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<String> createCustomer(@RequestBody @Valid CustomerRequest request) {
         return ResponseEntity.ok(customerService.createCustomer(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody @Valid LoginRequest request) {
+        String token = customerService.login(request.getEmail(), request.getPassword());
+        return ResponseEntity.ok(token);
     }
 
     @DeleteMapping("/{id}")
